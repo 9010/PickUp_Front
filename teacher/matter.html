@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>事项管理</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body background="#f4f5f6;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>事项管理</h1>
+    <div id="hui-header-menu-special"></div>
+</header>
+<div class="hui-wrap">
+	<!-- <div id="hui-header-sreach">
+		<div id="hui-header-sreach-icon"></div>
+		<form><input type="search" id="searchKey" onkeydown="if(event.keyCode==13)return false;" placeholder="请输入关键字" /></form>
+	</div> -->
+    <div id="refreshContainer" class="hui-refresh">
+    	<!-- hui-refresh-icon 为下拉动画展示区域 -->
+        <div class="hui-refresh-icon"></div>
+        <div class="hui-refresh-content hui-list" id="list">
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../js/hui.js"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+hui.refresh('#refreshContainer', refresh);
+
+function refresh(){
+    if(hui.refreshNumber < 1){hui.loading('加载中...');}
+    var url = CommonUtils.urlPrefix+'getnotice';
+    var school = localStorage.getItem("local_my_school");
+    var data = {
+        school
+    };
+    
+    var success=function(result){
+        console.log(result);
+        hui.loading('加载中...', true);
+        var html  = '';
+        for(var i = 0; i < result.num; i++){
+            html += '<li>'+'<a href="../common/Info.html?id='+result.list[i].id+'">'+
+                '<div class="hui-list-text">'+
+                    '<div class="hui-list-text-content">'+result.list[i].title+
+                '</div>'+
+                '<div class="hui-list-info">查看<span class="hui-icons hui-icons-right"></span>'+
+                    '</div>'+
+                    '</div>'+'</a>'+
+            '</li>';         
+        }	
+        hui('#list').html(html);
+        hui.endRefresh();
+        //关闭loading
+        hui.loading('加载中...', true);
+    }
+    var error=function(err){
+        hui.loading('加载中...', true);
+        hui.toast("网络错误！");
+        console.log(err)
+    }
+    hui.postJSON(url,data,success,error);
+}
+
+var meuns = ['添加事项'];
+var cancel = '取消';
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpageTeacher.html';
+});
+hui('#hui-header-menu-special').click(function(){
+    hui.actionSheet(meuns, cancel, function(e){
+		console.log(e.index);
+        hui.toast(e.innerHTML);
+    });
+});
+</script>
+</body>
+</html>

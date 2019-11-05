@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>HUI</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style type="text/css">
+	body{
+		background:#FFF;
+	}
+	.line{
+		height:20px;
+	}
+	.hui-media-list .hui-media-list-img{
+		height: 100%;
+		width:100%;
+		text-align:center;
+	}
+	.hui-list li > a, .hui-list > a{
+		height: 100px;
+	}
+</style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>拍照说明</h1>
+</header>
+<div class="hui-wrap">
+	<div class="line"></div>
+	<div class="hui-center-title">
+		<h1>人像照片自行采集规范</h1>
+	</div>
+	<div class="hui-content" style="padding:10px;" id="takePhotoInfo">
+		<!-- <p>照片采集要点：
+		<p>1、正面肖像照，背景为白色墙面；</p>
+		<p>2、大头照或身份证照：头部占整个照片版面的2/3以上；非其它证件照（其它证件照的头部占整个照片版面比例大多约为1/5）。</p>
+		<div class="hui-media-list" style="padding:10px;">
+			<ul>
+				<li>
+					<div class="hui-media-list-img">
+						<img src="../img/medialist/1.jpg" />
+					</div>
+				</li>
+			</ul>
+		</div>
+		<p style="text-align:center">自拍大头照（可用）</p>
+		<div class="hui-media-list" style="padding:10px;">
+			<ul>
+				<li>
+					<div class="hui-media-list-img">
+						<img src="../img/medialist/1.jpg" />
+					</div>
+				</li>
+			</ul>
+		</div>
+		<p style="text-align:center">身份证照（可用）</p>
+		<div class="hui-media-list" style="padding:10px;">
+			<ul>
+				<li>
+					<div class="hui-media-list-img">
+						<img src="../img/medialist/1.jpg" />
+					</div>
+				</li>
+			</ul>
+		</div>
+		<p style="text-align:center">其他证件照（不能用）</p>
+	</div>	 -->
+</div>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+var url=CommonUtils.urlPrefix+'photonotice';
+var data;
+
+var success=function(result){
+	console.log(result.content);
+	document.getElementById("takePhotoInfo").innerHTML += result.content;
+};
+
+var error=function(err){
+    console.log(err)
+}
+hui.postJSON(url,data,success,error);
+
+</script>
+</body>
+</html>

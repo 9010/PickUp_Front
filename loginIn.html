@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>登录</title>
+<link rel="stylesheet" type="text/css" href="./css/hui.css" />
+<style type="text/css">
+	body{background:#FFF;}
+	.line{height:20px;}
+</style>
+</head>
+<body style="background:#F4F5F6;">
+<header class="hui-header">
+	<h1>家长接送系统</h1>
+</header>
+<div class="hui-wrap">
+	<div class="hui-center-title-special" style="margin-top:35px;"><h1 style="border:10px;">登录</h1></div>
+	<div class="line"></div>
+	<div class="line"></div>
+    <div style="margin:20px 10px; margin-bottom:15px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">手机号</div>
+            <input type="text" class="hui-input hui-input-clear username" placeholder="请输入手机号" checkType="string" checkData="5,20" checkMsg="请输入手机号" />
+        </div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">密码</div>
+            <input type="password" class="hui-input hui-pwd-eye password" placeholder="登录密码" checkType="string" id="pwd" checkData="6,20" checkMsg="必须输入密码" />
+        </div>
+	</div>
+	<div class="hui-more-special"><a href="./common/identify.html">忘记密码？</a></div>
+	<div class="line"></div>
+	<div class="line"></div>
+    <div style="padding:10px; padding-top:10px;">
+        <button type="button" class="hui-button hui-button-large hui-primary" id="login">登录</button>
+	</div>
+	<div class="line"></div>
+	<a href="register.html">
+		<div class="hui-common-title" style="margin-top:15px;">
+				<div class="hui-common-title-line"></div>
+				<div class="hui-common-title-txt-special">注册</div>
+				<div class="hui-common-title-line"></div>
+		</div>
+	</a>
+</div>
+<script type="text/javascript" src="./js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="./cordova.js"></script>
+<script type="text/javascript" src="./js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript" src="./js/hui-form.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+hui('#login').click(function(){
+    //验证
+    var res = huiFormCheck('#form1');
+    //提交
+    if(res){
+		var url=CommonUtils.urlPrefix+'login';
+		var data={
+			username:$('.username').val(),
+			password:$('.password').val()
+		}
+		var success=function(result){
+			console.log(result);
+			if(result.usertype==3){ //家长
+				console.log(result.username)
+				localStorage.setItem("local_my_user",JSON.stringify(result.userid));
+				localStorage.setItem("local_my_family",JSON.stringify(result.familyid));
+				localStorage.setItem("local_my_school",JSON.stringify(result.school));
+				//将token和username传给后台，让后台做绑定
+				var username = result.username;  //用户名
+				console.log(username)
+			var success = function(message){
+					console.log("+++++++++++++++++++++++++")
+					var url=CommonUtils.urlPrefix+'bind';
+					var data={
+						message,  //设备Token
+						username  //用户名
+					}
+					var success=function(result){console.log(result)}
+					var error=function(err){console.log(err)}
+					hui.postJSON(url,data,success,error);  //传给后台，后台做绑定
+				 };
+				var fail = function(message){
+            		console.log("==================================")
+         		};
+
+				cordova.exec(success, fail, "Native2Js", "speak", ["Test"]);
+				console.log("-----------------------")
+				//跳转
+				window.location.href='./parent/mainpage.html';
+			}
+			else if(result.usertype==5){ //教师
+			//存储用户信息至浏览器内存，目前仅存储用户名（手机号）
+				localStorage.setItem("local_my_user",JSON.stringify(result.userid));
+				localStorage.setItem("local_my_school",JSON.stringify(result.school));
+				//将token和username传给后台，让后台做绑定
+				var username = result.username;  //用户名
+				console.log(username)
+				var success = function(message){
+					var url=CommonUtils.urlPrefix+'bind';
+					var data={
+						message,  //设备Token
+						username  //用户名
+					}
+					var success=function(result){console.log(result)}
+					var error=function(err){console.log(err)}
+					hui.postJSON(url,data,success,error);  //传给后台，后台做绑定
+				};
+   				var fail = function(message){
+            		alert("fail = "+message);
+         		};
+
+				cordova.exec(success, fail, "Native2Js", "speak", ["Test"]);
+
+				//跳转
+				window.location.href='./teacher/mainpageTeacher.html';
+			}
+			else if(result.code == 1){
+				hui.toast("密码错误");
+			}
+			else if(result.code == 2){
+				hui.toast("手机号不正确");
+			}
+		}
+		var error=function(err){
+			console.log(err)
+		}
+		hui.postJSON(url,data,success,error);
+	}
+});
+
+</script>
+</body>
+</html>
+

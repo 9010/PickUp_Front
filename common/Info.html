@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>HUI</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style type="text/css">
+	body{background:#FFF;}
+	.line{height:20px;}
+</style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>通知消息</h1>
+</header>
+<div class="hui-wrap" id="Info">
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+var school = localStorage.getItem("local_my_school");
+var str = window.location.search;//取地址参数部分
+var tmp = "";
+tmp = str;
+var id = tmp.substr(str.indexOf('=')+1);
+console.log(id); 
+
+var url = CommonUtils.urlPrefix+'selectnotice';
+
+var data={
+	id,
+	school
+}
+var success=function(result){
+    console.log(result);
+	var html  = '';
+	html += '<div class="line"></div>'+
+		'<div class="hui-center-title">'+'<h1>'+result.title+'</h1>'+
+		'</div>'+
+		'<div class="hui-content" style="padding:10px;">'+'<h1>'+result.content+'<h1>'+
+		'</div>';
+	document.getElementById("Info").innerHTML += html;
+}
+
+var error=function(err){
+	console.log(err)
+}
+
+hui.postJSON(url,data,success,error);
+
+</script>
+</body>
+</html>

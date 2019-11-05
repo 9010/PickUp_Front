@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>拍摄照片</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>选取照片</h1>
+</header>
+<div class="hui-wrap">
+    <div id="hui-img-cuter-select">
+        <div id="hui-img-cuter-t1">+</div>
+        <div id="hui-img-cuter-t2">请选择图片完成后请点击保存图片</div>
+    </div>
+</div>
+<!-- fotter修改在CSS中，修改flex属性 -->
+<div id="hui-footer">
+    <button type="button" class="hui-button hui-fl" id="selectImgBtn">选择照片</button>
+    <!-- <button type="button" class="hui-button hui-fl"  id="photo">
+        拍摄照片
+    </button> -->
+    <button type="button" class="hui-button hui-primary hui-fr" id="uploadBtn">
+        保存照片
+    </button>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../js/hui-image-cuter.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../cordova_plugins.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../cordova.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+var str = window.location.search;//取地址参数部分
+var tmp = "";
+tmp = str;
+var stuid = tmp.substr(str.indexOf('=')+1);
+console.log(stuid);
+
+/*
+huiImgCuter 参数 
+1. 宽度和高度的比例 高度 / 宽度 默认 1
+2. 最终保存图片的宽度 默认 200px 高度根据宽高比自动调整 
+*/
+var cuter = new huiImgCuter();
+//绑定底部的选择按钮
+cuter.bindSelect("#selectImgBtn");
+//保存照片
+hui('#uploadBtn').click(function(){
+	//获取图片数据
+	var imgData = cuter.getImgData();
+    
+	if(!imgData){hui.toast('请选择图片'); return;}
+	hui.loading('上传图片...');
+    //console.log(imgData);
+    var url = CommonUtils.urlPrefix+'uploadstuimg'; 
+    var userid = localStorage.getItem("local_my_user");
+    var school = localStorage.getItem("local_my_school");
+    var data={
+        stuid,
+        imgData,
+        school
+    }
+    console.log(data);
+    var success=function(result){
+        console.log(result);	
+        if(result.code == 0){
+            hui.closeLoading();
+            hui.alert('修改成功','确认', function(){window.location.href = "../parent/family.html";});
+        }
+    }
+
+    var error=function(err){
+	console.log(err)
+    }
+    hui.postJSON(url,data,success,error);
+    sleep(5000).then(() => {
+        hui.closeLoading();
+        hui.toast('网络错误'); 
+    });
+	/*
+	//上传到服务端演示代码
+    hui.post(
+        'http://192.168.31.188/uper.php',
+        {img:imgData},
+        function(data){
+            hui.closeLoading();
+            hui.toast('上传成功!');
+        }
+    );
+    */
+    //setTimeout(function(){hui.toast('上传成功！'); hui.closeLoading();}, 2000);
+});
+
+// document.getElementById("photo").addEventListener
+//    ("click", cameraTakePicture);
+
+// function cameraTakePicture() {
+// 	navigator.camera.getPicture(onSuccess, onFail, { quality: 50,
+// 	    destinationType: Camera.DestinationType.DATA_URL
+//     });
+				 
+// 	function onSuccess(imageData) {
+// 		var image = document.getElementById('myImage');
+//         image.src = "data:image/jpeg;base64," + imageData;
+//         // function onDeviceReady()
+//         // {
+// 	    //     window.canvas2ImagePlugin.saveImageDataToLibrary(
+//         //     function(msg){
+//         //         console.log(msg);
+//         //     },
+//         //     function(err){
+//         //         console.log(err);
+//         //     },
+//         //     document.getElementById('myImage')
+//         //     );
+//         // }   
+// 	}
+				 
+// 	function onFail(message) {
+// 		alert('Failed because: ' + message);
+//     }
+// }
+                 
+</script>
+
+</body>
+</html>

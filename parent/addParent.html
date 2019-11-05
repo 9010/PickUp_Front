@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>添加家长</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style>
+	div{
+		overflow: visible;
+	}
+	body {
+		margin: 0;
+		text-align: center;
+	}
+	#clipArea {
+		margin: 20px;
+		height: 300px;
+	}
+	#view {
+		margin: 0 auto;
+		width: 200px;
+		height: 200px;
+	}
+</style>
+</head>
+<body ontouchstart="" style="background:#FCFCFC;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>添加家长</h1>
+</header>
+
+<div class="hui-wrap">
+    <form style="padding:28px 10px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">姓名</div>
+            <input type="text" class="hui-input hui-input-clear name" placeholder="请输入姓名" checkType="string" checkData="1,20" checkMsg="请正确输入姓名" />
+        </div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">年龄</div>
+            <input type="number" class="hui-input age"  placeholder="请输入年龄" checkType="string" checkData="1,3" checkMsg="请正确输入年龄" />
+        </div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">住址</div>
+            <input type="text" class="hui-input address" placeholder="请输入地址" checkType="string" checkData="5,50" checkMsg="请正确输入地址" />
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">身份</div>
+            <button type="button" class="hui-button hui-button-large" id="btn1">选择身份</button>
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">照片</div>
+        	<input id="file" name="file" type="file" style="display:none" 
+			required="required" onchange="document.getElementById('fname').value=this.value"/><!--实际起作用的file型input-->
+            <input type="button" name="submit" class="hui-button hui-button-large hui-fl" id="file" 
+                value="浏览图片" onclick="select_file();"/><!--用于触发file型input浏览按钮的button-->
+            <input id="fname" type="text"  tabindex="1" style="display:none" 
+                style="float:left;width:80%;height:40px;border:1px solid #34495E"/><!--用于显示上传文件名的input -->
+        </div>
+        
+        <div id="clipArea" style="margin-top:50px;"></div>
+        <div id="view" style="display:none" ></div>
+        <div style="position:fixed; z-index:3; background:#FFF; bottom: 0%" class="hui-wrap">
+            <button type="button" class="hui-button hui-button-large hui-primary" id="submitBtn">添加家长</button>
+        </div>
+    </form> 
+
+    
+    
+</div>
+
+<script src="http://www.jq22.com/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script src="../js/iscroll-zoom.js"></script>
+<script src="../js/hammer.js"></script>
+<script src="../js/lrz.all.bundle.js"></script>
+<script src="../js/jquery.photoClip.js"></script>
+<script type="text/javascript" src="../js/hui.js"></script>
+<script type="text/javascript" src="../js/hui-form.js"></script>
+<script type="text/javascript" src="../js/hui-picker.js" charset="utf-8"></script>
+<script type="text/javascript" src="../js/hui-image-cuter-2.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+var storge = window.localStorage;
+var school = localStorage.getItem("local_my_school");
+hui.formInit();
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+function select_file(){
+	document.getElementById("file").click();
+	var name = document.getElementById("file").value;
+}
+
+var relation;
+var picker1 = new huiPicker('#btn1', function(){
+    var val = picker1.getVal(0);
+    var txt = picker1.getText(0);
+    hui('#btn1').html(txt);
+    relation = val;
+});
+// 同级 picker 数量设置 默认 1
+picker1.level = 1;
+//1. piker 数据
+var pickerData = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'},{value:7, text:'临时委托人'}];
+//2. 查询默认值 例如  {value:2, text:'女'} 的默认值为 2
+//不设置默认值此步骤省略即可
+var defaultValue = 2;
+var defaultIndex = pickerData.pickerIndexOf(defaultValue);
+//3 绑定数据时设置默认值 //不设置默认值 忽略第三个参数即可
+picker1.bindData(0, pickerData);
+
+relation = 1;
+hui('#btn1').html(pickerData[relation-1].text);
+
+var cuter = new huiImgCuter();
+//绑定底部的选择按钮
+cuter.bindSelect("#selectImgBtn");
+
+var clipArea = new bjj.PhotoClip("#clipArea", {
+	size: [260, 260],
+	outputSize: [640, 640],
+	file: "#file",
+	view: "#view",
+	ok: "#submitBtn",
+	loadStart: function() {
+		console.log("照片读取中");
+	},
+	loadComplete: function() {
+		console.log("照片读取完成");
+	},
+	clipFinish: function(imgData) {
+        var res = huiFormCheck('#form1');
+        var repeat = false;
+		if(res){
+            if(relation == null || (relation < 1 || relation > 7)){
+                hui.toast('请选择身份'); 
+            }
+            else if(!imgData || imgData == "data:,"){
+                hui.toast('请选择图片'); 
+            }
+            else{
+                console.log(storge);
+                for (var i = 0; i < storge["num"]; i++){
+                    if(storge["id"+i]){
+                        if (relation == storge["relation"+storge["id"+i]]){
+                            repeat = true;
+                            hui.toast('已存在此身份家长'); 
+                            break;
+                        }
+                    }
+                }
+                console.log(relation);
+                console.log(repeat);
+                if (!repeat){
+                    hui.loading('上传中...');
+                    var url=CommonUtils.urlPrefix+'addparent';
+                    var familyid = localStorage.getItem("local_my_family");
+                    var data={
+                        familyid,
+                        name:$('.name').val(),
+                        address:$('.address').val(),
+                        age:$('.age').val(),
+                        imgData,
+                        relation,
+                        school
+                    }
+                    console.log(data);
+                    var success=function(result){    
+                        console.log(result);
+                        hui.closeLoading();
+                        if (result.code == 0){
+                            hui.alert('添加成功','确认'),function(){window.location.href = "family.html";}; 
+                            }
+                        else{
+                            hui.toast('未知错误'); 
+                        }
+                    }
+                    var error=function(err){
+                        console.log(err)
+                    }
+                    console.log(data);
+                    hui.postJSON(url,data,success,error);
+                    sleep(50000).then(() => {
+                        hui.closeLoading();
+                        hui.toast('网络错误'); 
+                    });
+                }
+            }
+        }
+	}
+});
+</script>
+</body>
+</html>

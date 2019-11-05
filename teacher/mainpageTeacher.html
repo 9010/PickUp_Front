@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>家长接送系统教师端</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style type="text/css">
+	body{background:#FFF;}
+	.line{height:20px;}
+</style>
+</head>
+<body>
+<header class="hui-header">
+    <h1>家长接送系统教师端</h1>
+</header>
+<div class="hui-wrap">
+	<div style="padding:0px;">
+		<div class="hui-swipe" id="swipe">
+			<div class="hui-swipe-items">
+				<a href="http://www.baidu.com">
+					<div class="hui-swipe-item"><img src="../img/imglist/1.jpg"/></div>
+				</a>
+				<div class="hui-swipe-item"><img src="../img/imglist/2.jpg"/></div>
+				<div class="hui-swipe-item"><img src="../img/imglist/3.jpg"/></div>
+				<div class="hui-swipe-item"><img src="../img/imglist/4.jpg"/></div>
+			</div>
+		</div>
+	</div>
+	<div class="line"></div>
+	<div class="hui-speed-dial">
+			<ul>
+				<li>					
+					<a href="teacherInfo.html">
+						<div class="hui-speed-dial-icons">
+							<span class="hui-icons hui-icons-my"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							账号信息
+						</div>
+					</a>
+				</li>
+				<!-- <li>
+					<a href="class.html">
+						<div class="hui-speed-dial-icons" >
+							<span class="hui-icons hui-icons-register"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							班级管理
+						</div>
+					</a>
+				</li> -->
+				<li>
+					<a href="shuttle.html">
+						<div class="hui-speed-dial-icons">
+							<span class="hui-icons hui-icons-register"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							接送管理
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="recordTeacher.html">
+						<div class="hui-speed-dial-icons">
+							<span class="hui-icons hui-icons-home"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							接送记录
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="matter.html">
+						<div class="hui-speed-dial-icons">
+							<span class="hui-icons hui-icons-write"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							事项管理
+						</div>
+					</a>
+				</li>
+				<!-- <li>
+					<a href="../common/settings.html">
+						<div class="hui-speed-dial-icons">
+							<span class="hui-icons hui-icons-progress"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							系统设置
+						</div>
+					</a>
+				</li> -->
+				<li>
+					<a href="../common/photoInfo.html">
+						<div class="hui-speed-dial-icons">
+							<span class="hui-icons hui-icons-warn"></span>
+						</div>
+						<div class="hui-speed-dial-text">
+							拍照说明
+						</div>
+					</a>
+				</li>
+			</ul>
+	</div>
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-swipe.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+$(document).ready(function(){
+	var localuser = localStorage.getItem("local_my_user");
+	if(localuser != null && typeof(localuser) != undefined && localuser!=undefined){
+		console.log(JSON.parse(localuser));
+		var identityType=JSON.parse(localuser).identityType;
+		if(identityType=='1'){
+			sleep(800).then(()=>{
+			window.location.href='../mainpageTeacher.html';
+			})
+		}
+	}
+	else{
+		window.location.href='../loginIn.html';
+	}
+});
+
+var swipe = new huiSwpie('#swipe');
+swipe.autoPlay = true;
+swipe.run();
+
+</script>
+</body>
+</html>

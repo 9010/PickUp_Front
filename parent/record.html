@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>接送记录</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style type="text/css">
+	#hui-select-beautify{
+		z-index: 0;
+	}
+	.hui-media-list .hui-media-list-img{
+		height: 100px;
+		width: 100px;
+	}
+	.hui-list li > a, .hui-list > a{
+		height: 100px;
+	}
+	/* .hui-media-list-child .hui-media-list-img img{
+		height: 100px;
+	} */
+	/* .hui-media-list li{
+		height: 100px;
+	} */
+	/* .hui-media-list-child li{
+		height: 100px;
+	} */
+	.hui-tab-title{
+		width: 100%;
+	}
+	.hui-tab-body{
+		margin-top: 47px;
+	}
+</style>
+</head>
+<body>
+<header class="hui-header">
+	<div id="hui-back-mainpage"></div>
+    <h1>接送记录</h1>
+</header>
+<div style="position: fixed; z-index:3; background:#FFF;" class="hui-wrap">
+	<div class="hui-center-title"><h1>请选择时间段和子女</h1></div>
+  <div style="height:50px; width:100%; background:#FFF;">
+	  <div style="width:50%; height:50px; line-height:50px; text-align:center; float:left;">
+		  <select id="select1">
+			  <option value="1" selected="selected">今天</option>
+			  <option value="2">三天内</option>
+			  <option value="3" >一周内</option>
+			  <option value="4">两周内</option>
+			  <option value="5">一个月</option>
+		  </select>
+	  </div>
+	  <div style="width:50%; height:50px; line-height:50px; text-align:center; float:left;">
+		  <select id="select2">
+			  <option value="0" selected="selected">所有子女</option>
+		  </select>
+	  </div>	
+  </div>
+</div>
+
+<div style="padding-top:150px; padding-bottom:30px;" class="hui-wrap">
+	<div class="hui-media-list" style="padding:10px;">
+		<ul>
+
+		</ul>
+	</div>	
+</div>
+<div style="position:fixed; z-index:3; background:#FFF; bottom: 0%" class="hui-wrap">
+	<button type="button" class="hui-button hui-button-large hui-primary" id="btn1" style="margin:0 auto;">查看记录</button>
+</div>
+<script type="text/javascript" src="../js/hui.js" charset="utf-8"></script>
+<script src="../js/hui-select-beautify.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+var school = localStorage.getItem("local_my_school");
+var pickerData = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'},{value:7, text:'临时委托人'}];
+var pickerType = [{value:1, text:'送入'},{value:2, text:'接走'}];
+var selfPickerType = [{value:1, text:'已入校'},{value:2, text:'单独出校'}];
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpage.html';
+});
+// var html='';	
+// for(var i = 0; i < 2; i++){
+// 	html += '<option value='+'"'+(i+2)+'"'+'>'+'A'+'</option>';
+// }
+// document.getElementById("select2").innerHTML += html;
+
+var url = CommonUtils.urlPrefix+'searchstu';
+//var username = localStorage.getItem("local_my_user");  //用户名
+var familyid = localStorage.getItem("local_my_family");
+var data={
+	familyid,
+	school
+}
+var success=function(result){
+	console.log(result);
+	var html  = '';
+	for(var i = 0; i < result.child_num; i++){
+		html += '<option value='+'"'+result.children[i].stuid+'"'+'>'+result.children[i].name+'</option>';		
+	}
+	document.getElementById("select2").innerHTML += html;
+}
+var error=function(err){
+	console.log(err)
+}
+hui.postJSON(url,data,success,error);
+
+
+hui('#select1').selectBeautify(showVal, false);
+hui('#select2').selectBeautify(showVal, false);
+function showVal(val){
+    // hui.toast('选项值 : ' + val);
+}
+
+var url = CommonUtils.urlPrefix+'pickup';
+var time = 1;
+var childid = 0;
+var familyid = localStorage.getItem("local_my_family");
+var data={
+	familyid,
+	time,
+	childid,
+	school
+}
+console.log(data)
+var success=function(result){
+	console.log(result);
+	if(result.num != 0){
+		var html  = '';
+		for(var i = 0; i < result.num; i++){
+			if(result.recordLists[i].self == 0){
+				html += 
+					'<li>'+
+						'<div class="hui-media-list-img" >'+
+							'<img src="data:image/jpeg;base64,'+ result.recordLists[i].stuImage +'"/>'+
+						'</div>'+
+						'<div class="hui-media-list-img" style="margin-left:10px">'+
+							'<img src="data:image/jpeg;base64,'+ result.recordLists[i].patImage +'"/>'+
+						'</div>'+
+						'<div class="hui-media-content" style="margin-left:10px">'+
+						'<h1>'+result.recordLists[i].time+'</h1>'+
+						'<h1>'+pickerData[result.recordLists[i].relation-1].text+': '+result.recordLists[i].patName+'</h1>'+
+						'<h1>'+pickerType[result.recordLists[i].inOutType].text+': '+result.recordLists[i].stuName+'</h1>'+
+						'<h1>体温：</h1>'+
+						'</div>'+
+					'</li>';
+			}
+			else if (result.recordLists[i].self == 1){
+				if(result.recordLists[i].inOutType == 1){
+					html += 
+						'<li>'+
+							'<div class="hui-media-list-img">'+
+								'<img src="data:image/jpeg;base64,'+ result.recordLists[i].stuImage +'"/>'+
+							'</div>'+
+							'<div class="hui-media-content">'+
+							'<h1 style="color:red">'+result.recordLists[i].time+'</h1>'+
+							'<h1 style="color:red">'+result.recordLists[i].stuName+'   '+selfPickerType[result.recordLists[i].inOutType].text+'</h1>'+
+							'<h1>体温：</h1>'+
+							'</div>'+
+						'</li>';
+				}
+				else if(result.recordLists[i].inOutType == 0){
+					html += 
+						'<li>'+
+							'<div class="hui-media-list-img">'+
+								'<img src="data:image/jpeg;base64,'+ result.recordLists[i].stuImage +'"/>'+
+							'</div>'+
+							'<div class="hui-media-content">'+
+							'<h1>'+result.recordLists[i].time+'</h1>'+
+							'<h1>'+result.recordLists[i].stuName+'   '+selfPickerType[result.recordLists[i].inOutType].text+'</h1>'+
+							'<h1>体温：</h1>'+
+							'</div>'+
+						'</li>';
+				}
+			}
+		}
+		hui('.hui-media-list ul').html(html);
+	}
+	else if(result.num == 0){
+		hui.toast("无记录");
+	}
+}
+var error=function(err){
+	console.log(err)
+}
+hui.postJSON(url,data,success,error);
+
+hui('#btn1').click(function(){
+    time = hui('#select1').val();
+    childid = hui('#select2').val();
+	var url = CommonUtils.urlPrefix+'pickup';
+	var data={
+		familyid,
+		time,
+		childid,
+		school
+	}
+	console.log(data)
+	var success=function(result){
+		console.log(result);
+		if(result.num != 0){
+		var html  = '';
+		for(var i = 0; i < result.num; i++){
+			if(result.recordLists[i].self == 0){
+				html += 
+					'<li>'+
+						'<div class="hui-media-list-img">'+
+							'<img src="data:image/jpeg;base64,'+ result.recordLists[i].patImage +'"/>'+
+						'</div>'+
+						'<div class="hui-media-list-img" style="margin-left:10px">'+
+							'<img src="data:image/jpeg;base64,'+ result.recordLists[i].stuImage +'"/>'+
+						'</div>'+
+						'<div class="hui-media-content" style="margin-left: 10px">'+
+						'<h1>'+result.recordLists[i].time+'</h1>'+
+						'<h1>'+pickerData[result.recordLists[i].relation-1].text+': '+result.recordLists[i].patName+'</h1>'+
+						'<h1>'+pickerType[result.recordLists[i].inOutType].text+': '+result.recordLists[i].stuName+'</h1>'+
+						'<h1>体温：</h1>'+
+						'</div>'+
+					'</li>';
+			}
+			else if (result.recordLists[i].self == 1){
+				if(result.recordLists[i].inOutType == 1){
+					html += 
+						'<li>'+
+							'<div class="hui-media-list-img">'+
+								'<img src="data:image/jpeg;base64,'+ result.recordLists[i].stuImage +'"/>'+
+							'</div>'+
+							'<div class="hui-media-content">'+
+							'<h1 style="color:red">'+result.recordLists[i].time+'</h1>'+
+							'<h1 style="color:red">'+result.recordLists[i].stuName+'   '+selfPickerType[result.recordLists[i].inOutType].text+'</h1>'+
+							'<h1>体温：</h1>'+
+							'</div>'+
+						'</li>';
+				}
+				else if(result.recordLists[i].inOutType == 0){
+					html += 
+						'<li>'+
+							'<div class="hui-media-list-img">'+
+								'<img src="data:image/jpeg;base64,'+ result.recordLists[i].stuImage +'"/>'+
+							'</div>'+
+							'<div class="hui-media-content">'+
+							'<h1>'+result.recordLists[i].time+'</h1>'+
+							'<h1>'+result.recordLists[i].stuName+'   '+selfPickerType[result.recordLists[i].inOutType].text+'</h1>'+
+							'<h1>体温：</h1>'+
+							'</div>'+
+						'</li>';
+				}
+			}
+		}
+		hui('.hui-media-list ul').html(html);
+		}else if (result.num == 0){
+			hui.toast("无记录");
+		}
+	}
+	var error=function(err){
+		console.log(err)
+	}
+	hui.postJSON(url,data,success,error);
+	//window.location.href='recordInfo.html';
+});
+
+</script>
+</body>
+</html>

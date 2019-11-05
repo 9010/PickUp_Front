@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>家庭成员</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style type="text/css">
+	.hui-media-list .hui-media-list-img{
+		height: 100px;
+	}
+	.hui-list li > a, .hui-list > a{
+		height: 100px;
+	}
+	.hui-media-list-child .hui-media-list-img img{
+		height: 100px;
+	}
+	.hui-media-list li{
+		height: 100px;
+	}
+	.hui-media-list-child li{
+		height: 100px;
+	}
+	.hui-tab-title{
+		width: 100%;
+	}
+	.hui-tab-body{
+		margin-top: 47px;
+	}
+	.hui-swipe-do-btn{
+		background: grey;
+	}
+</style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back-mainpage"></div>
+	<h1>家庭成员</h1>
+	<div id="hui-header-menu-special"></div>
+</header>
+<div class="hui-wrap">
+	<div id="refreshContainer" class="hui-refresh">
+		<!-- hui-refresh-icon 为下拉动画展示区域 -->
+		<div class="hui-refresh-icon"></div>
+		<div class="hui-refresh-content hui-list" id="list">
+		</div>
+	
+		<div class="hui-tab">
+			<div style="position: fixed;z-index: 3;width: 100%;background: #FFFFFF;">
+				<div class="hui-tab-title">
+					<div>家长</div>
+					<div>子女</div>
+				</div>
+			</div>
+			
+			<div class="hui-tab-body">
+				<div class="hui-tab-body-items">
+					<div class="hui-tab-item hui-list">	
+						<div class="hui-media-list" style="padding:10px;">
+							<ul>
+								<!-- <div class="hui-swipe-do">
+									<div class="hui-swipe-do-doms"> -->
+										<!-- 请不要给 hui-swipe-do-content 设置影响宽度的样式，如需要左padding在其内部增加div解决 -->
+											<!-- <div class="hui-swipe-do-content">
+											<li>
+												<a href="familyInfo.html">
+													<div class="hui-media-list-img">
+														<img src="../img/medialist/man.jpg"/>
+													</div>
+													<div class="hui-media-content">
+														<h1>张三</h1><p>父亲</p>
+													</div>
+												</a>
+											</li>
+										</div>
+										<div class="hui-swipe-do-btn" onclick="removeDom(this);">删除</div>
+									</div>
+								</div> -->
+								<!--<li>
+									<a href="familyInfo.html">
+									<div class="hui-media-list-img">
+										<img src="../img/medialist/woman.jpg" />
+									</div>
+									<div class="hui-media-content">
+										<h1>李四</h1><p>母亲</p>
+									</div>
+									</a>
+								</li> -->
+							</ul>
+						</div>
+					</div>
+					<div class="hui-tab-item hui-list">
+						<div class="hui-media-list-child" style="padding:10px;">
+							<ul></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-tab.js" type="text/javascript"></script>
+<script type="text/javascript" src="../js/AjaxHelper.js" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+var school = localStorage.getItem("local_my_school");
+hui.tab('.hui-tab');
+var pickerData = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'},{value:7, text:'临时委托人'}];
+//var userid = localStorage.getItem("local_my_user");  //用户名
+var storge = window.localStorage;
+familyid = localStorage.getItem("local_my_family");
+if (storge["num"] != 0 && storge["num"] != null){
+	console.log(storge);
+	var html  = '';
+	for(var i = 0; i < storge["num"]; i++){
+		if(storge["id"+i]){
+			html += 
+			'<div class="hui-swipe-do">'+
+				'<div class="hui-swipe-do-doms">'+
+					'<div class="hui-swipe-do-content">'+
+						'<li>'+
+							'<a href="familyInfo.html?id='+storge["id"+i]+'">'+
+								'<div class="hui-media-list-img">'+
+									'<img src="data:image/jpeg;base64,'+ storge["image"+storge["id"+i]] +'"/>'+
+								'</div>'+
+								'<div class="hui-media-content">'+
+									'<h1>姓名：'+storge["name"+storge["id"+i]]+'</h1>'+
+									'<p>年龄：'+storge["age"+storge["id"+i]]+'</p>'+
+									'<p>身份：'+pickerData[storge["relation"+storge["id"+i]]-1].text+'</p>'+
+								'</div>'+
+							'</a>'+
+						'</li>'+
+					'</div>'+
+					'<div class="hui-swipe-do-btn" onclick="removeDom(this,'+storge["id"+i]+', 1);">删除</div>'+
+				'</div>'+
+			'</div>';
+		}
+	}
+	hui('.hui-media-list ul').html(html);
+
+	html = '';	
+	for(var i = 0; i < storge["child_num"]; i++){
+		if(storge["child_id"+i]){
+			html += 
+			'<div class="hui-swipe-do">'+
+				'<div class="hui-swipe-do-doms">'+
+					'<div class="hui-swipe-do-content">'+
+						'<li>'+
+							'<a href="../common/CutPhotoStu.html?id='+storge["child_id"+i]+'">'+
+								'<div class="hui-media-list-img">'+
+									'<img src="data:image/jpeg;base64,'+ storge["child_image"+storge["child_id"+i]] +'"/>'+
+								'</div>'+
+								'<div class="hui-media-content">'+
+									'<h1>姓名：'+storge["child_name"+storge["child_id"+i]]+'</h1>'+
+									'<p>年龄：'+storge["child_age"+storge["child_id"+i]]+'</p>'+
+								'</div>'+
+							'</a>'+
+						'</li>'+
+					'</div>'+
+					'<div class="hui-swipe-do-btn" onclick="removeDom(this,'+storge["child_id"+i]+', 2);">删除</div>'+
+				'</div>'+
+			'</div>';	
+		}	
+	}
+	hui('.hui-media-list-child ul').html(html);
+
+	hui.swipeDo();
+}
+else {
+	var url = CommonUtils.urlPrefix+'family';
+	var data={
+		familyid,
+		school
+	}
+	console.log(data);
+	var success=function(result){
+		storge["num"] = result.parent_num;
+		storge["child_num"] = result.child_num;
+		for(var i = 0; i < result.parent_num; i++){
+			storge["id"+i] = result.parent_obj[i].id;
+			storge["name"+result.parent_obj[i].id] = result.parent_obj[i].name;
+			storge["image"+result.parent_obj[i].id] = result.parent_obj[i].image;
+			storge["age"+result.parent_obj[i].id] = result.parent_obj[i].age;
+			storge["relation"+result.parent_obj[i].id] = result.parent_obj[i].relation;
+		}
+		for(var i = 0; i < result.child_num; i++){
+			storge["child_id"+i] =  result.child_obj[i].id;
+			storge["child_name"+result.child_obj[i].id] = result.child_obj[i].name;
+			storge["child_image"+result.child_obj[i].id] = result.child_obj[i].image;
+			storge["child_age"+result.child_obj[i].id] = result.child_obj[i].age;
+		}
+		console.log(storge);
+
+		console.log(result);
+		var html  = '';
+		for(var i = 0; i < result.parent_num; i++){
+			html += 
+			'<div class="hui-swipe-do">'+
+				'<div class="hui-swipe-do-doms">'+
+					'<div class="hui-swipe-do-content">'+
+						'<li>'+
+							'<a href="familyInfo.html?id='+result.parent_obj[i].id+'">'+
+								'<div class="hui-media-list-img">'+
+									'<img src="data:image/jpeg;base64,'+ result.parent_obj[i].image +'"/>'+
+								'</div>'+
+								'<div class="hui-media-content">'+
+									'<h1>姓名：'+result.parent_obj[i].name+'</h1>'+
+									'<p>年龄：'+result.parent_obj[i].age+'</p>'+
+									'<p>身份：'+pickerData[(result.parent_obj[i].relation)-1].text+'</p>'+
+								'</div>'+
+							'</a>'+
+						'</li>'+
+					'</div>'+
+					'<div class="hui-swipe-do-btn" onclick="removeDom(this,'+result.parent_obj[i].id+', 1);">删除</div>'+
+				'</div>'+
+			'</div>';
+		}
+		hui('.hui-media-list ul').html(html);
+		html = '';	
+		for(var i = 0; i < result.child_num; i++){
+			html += 
+			'<div class="hui-swipe-do">'+
+				'<div class="hui-swipe-do-doms">'+
+					'<div class="hui-swipe-do-content">'+
+						'<li>'+
+							'<a href="../common/CutPhotoStu.html?id='+result.child_obj[i].id+'">'+
+								'<div class="hui-media-list-img">'+
+									'<img src="data:image/jpeg;base64,'+ result.child_obj[i].image +'"/>'+
+								'</div>'+
+								'<div class="hui-media-content">'+
+									'<h1>姓名：'+result.child_obj[i].name+'</h1>'+
+									'<p>年龄：'+result.child_obj[i].age+'</p>'+
+								'</div>'+
+							'</a>'+
+						'</li>'+
+					'</div>'+
+					'<div class="hui-swipe-do-btn" onclick="removeDom(this,'+result.child_obj[i].id+', 2);">删除</div>'+
+				'</div>'+
+			'</div>';		
+		}
+		hui('.hui-media-list-child ul').html(html);
+
+		//初始化
+		hui.swipeDo();
+	}
+
+	var error=function(err){
+		console.log(err)
+	}
+
+	hui.postJSON(url,data,success,error); //将user传给后台，让后台可以查找对应的家庭成员，并返回成员信息
+}
+//删除家长功能
+function removeDom(cdom, id, type){
+	str = localStorage.getItem("local_my_user");	
+	var reg = new RegExp('"',"g");
+	str = str.replace(reg, "");  //去掉str两边的双引号
+
+	if (id == str){
+		hui.toast('不能删除自己');
+	}
+	else{
+		var url = CommonUtils.urlPrefix+'delete';
+		var data={
+			familyid,
+			id,
+			type,
+			school
+		}
+		console.log(data);
+		var success=function(result){	
+			console.log(result);
+			if(result.code == 0){
+				var dDom = hui(cdom).parent().parent();
+				dDom.hide(true);
+				setTimeout(function(){dDom.remove();}, 300);
+
+				if(type == 1){
+					for(var i = 0; i < storge["num"]; i++){
+						if(id == storge["id"+i]){
+							storge.removeItem("name"+id);
+							storge.removeItem("image"+id);
+							storge.removeItem("age"+id);
+							storge.removeItem("relation"+id);
+							storge.removeItem("id"+i);
+						}
+					}
+				}
+				else if (type == 2){
+					for(var i = 0; i < storge["child_num"]; i++){
+						if(id == storge["child_id"+i]){
+							storge.removeItem("child_name"+id);
+							storge.removeItem("child_image"+id);
+							storge.removeItem("child_age"+id);
+							storge.removeItem("child_id"+i);
+						}
+					}
+				}
+				console.log(storge);
+				hui.alert_without_back('删除成功','确认');
+			}
+			else if (result.code == 1){
+				hui.toast('未知错误');
+			}
+		}
+		var error=function(err){
+			console.log(err)
+		}
+		hui.postJSON(url,data,success,error);
+	}
+}
+
+hui.refresh('#refreshContainer', refresh);
+function refresh(){	
+	var url = CommonUtils.urlPrefix+'family';
+	var data={
+		familyid,
+		school
+	}
+	console.log(data);
+	var success=function(result){
+		console.log(result);
+		hui.loading('加载中...', true);
+		storge["num"] = result.parent_num;
+		storge["child_num"] = result.child_num;
+		for(var i = 0; i < result.parent_num; i++){
+			storge["id"+i] = result.parent_obj[i].id;
+			storge["name"+result.parent_obj[i].id] = result.parent_obj[i].name;
+			storge["image"+result.parent_obj[i].id] = result.parent_obj[i].image;
+			storge["age"+result.parent_obj[i].id] = result.parent_obj[i].age;
+			storge["relation"+result.parent_obj[i].id] = result.parent_obj[i].relation;
+		}	
+		for(var i = 0; i < result.child_num; i++){
+			storge["child_id"+i] =  result.child_obj[i].id;
+			storge["child_name"+result.child_obj[i].id] = result.child_obj[i].name;
+			storge["child_image"+result.child_obj[i].id] = result.child_obj[i].image;
+			storge["child_age"+result.child_obj[i].id] = result.child_obj[i].age;
+		}
+		console.log(storge);
+
+		var html  = '';
+		for(var i = 0; i < result.parent_num; i++){
+			html += 
+			'<div class="hui-swipe-do">'+
+				'<div class="hui-swipe-do-doms">'+
+					'<div class="hui-swipe-do-content">'+
+						'<li>'+
+							'<a href="familyInfo.html?id='+result.parent_obj[i].id+'">'+
+								'<div class="hui-media-list-img">'+
+									'<img src="data:image/jpeg;base64,'+ result.parent_obj[i].image +'"/>'+
+								'</div>'+
+								'<div class="hui-media-content">'+
+									'<h1>姓名：'+result.parent_obj[i].name+'</h1>'+
+									'<p>年龄：'+result.parent_obj[i].age+'</p>'+
+									'<p>身份：'+pickerData[(result.parent_obj[i].relation)-1].text+'</p>'+
+								'</div>'+
+							'</a>'+
+						'</li>'+
+					'</div>'+
+					'<div class="hui-swipe-do-btn" onclick="removeDom(this,'+result.parent_obj[i].id+', 1);">删除</div>'+
+				'</div>'+
+			'</div>';
+		}
+		hui('.hui-media-list ul').html(html);
+		html = '';	
+		for(var i = 0; i < result.child_num; i++){
+			html += 
+			'<div class="hui-swipe-do">'+
+				'<div class="hui-swipe-do-doms">'+
+					'<div class="hui-swipe-do-content">'+
+						'<li>'+
+							'<a href="../common/CutPhotoStu.html?id='+result.child_obj[i].id+'">'+
+								'<div class="hui-media-list-img">'+
+									'<img src="data:image/jpeg;base64,'+ result.child_obj[i].image +'"/>'+
+								'</div>'+
+								'<div class="hui-media-content">'+
+									'<h1>姓名：'+result.child_obj[i].name+'</h1>'+
+									'<p>年龄：'+result.child_obj[i].age+'</p>'+
+								'</div>'+
+							'</a>'+
+						'</li>'+
+					'</div>'+
+					'<div class="hui-swipe-do-btn" onclick="removeDom(this,'+result.child_obj[i].id+', 2);">删除</div>'+
+				'</div>'+
+			'</div>';		
+		}
+		hui('.hui-media-list-child ul').html(html);
+
+		//初始化
+		hui.swipeDo();
+
+		hui.endRefresh();
+        //关闭loading
+        hui.loading('加载中...', true);
+	}
+
+	var error=function(err){
+		hui.loading('加载中...', true);
+        hui.toast("网络错误！");
+        console.log(err)
+	}
+
+	hui.postJSON(url,data,success,error); //将user传给后台，让后台可以查找对应的家庭成员，并返回成员信息
+}
+
+var meuns = ['添加家长', '添加子女'];
+var cancel = '取消';
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpage.html';
+});
+hui('#hui-header-menu-special').click(function(){
+    hui.actionSheet(meuns, cancel, function(e){
+		console.log(e.index);
+        hui.toast(e.innerHTML);
+    });
+});
+
+</script>
+</body>
+</html>

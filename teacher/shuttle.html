@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>接送管理</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+<style type="text/css">
+	.mycss{
+		position: absolute;
+		right: 2rem;
+	}
+	#hui-select-beautify{
+		z-index: 10;
+	}
+	.hui-media-list .hui-media-list-img{
+		height: 100px;
+	}
+	.hui-list li > a, .hui-list > a{
+		height: 100px;
+	}
+	.hui-media-list-child .hui-media-list-img img{
+		height: 100px;
+	} 
+	.hui-media-list li{
+		height: 100px;
+	}
+	 .hui-media-list-child li{
+		height: 100px;
+	} 
+	.hui-tab-title{
+		width: 100%;
+	}
+	.hui-tab-body{
+		margin-top: 47px;
+	}
+</style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back-mainpage"></div>
+	<h1>接送管理</h1>
+</header>
+
+<div class="hui-wrap">	
+	<div style="position: fixed;z-index: 8;width: 100%;background: #FFFFFF;">
+	<div style="width:100%; height:50px; line-height:50px; text-align:center; float:left;" id="select"></div>
+	</div>
+	<div style="padding-top:50px;" class="hui-wrap">
+		<div class="hui-media-list" style="padding:10px;">
+			<div id="refreshContainer" class="hui-refresh">
+				<!-- hui-refresh-icon 为下拉动画展示区域 -->
+				<div class="hui-refresh-icon"></div>
+				<div class="hui-refresh-content hui-list" id="list">
+					<ul>
+						<!-- <li>
+							<div class="hui-media-list-img">
+									<img src=""/>
+								</div>
+								<div class="hui-media-content">
+						<h1>学生姓名：123</h1>
+						<p>学生学号：123</p></div>
+										<div class="mycss">
+										<h1>已入校</h1>
+							<h1>家长已入校</h1>
+							
+							<h1>已离校</h1>
+							</div> 	
+						</li>	 -->
+					</ul>
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>
+
+<div style="position:fixed; z-index:3; background:#FFF; bottom: 0%" class="hui-wrap">
+		<button type="button" class="hui-button hui-button-large hui-primary" id="btn1" style="margin:0 auto;">查看记录</button>
+</div>
+
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-tab.js" type="text/javascript"></script>
+<script src="../js/hui-select-beautify.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script src="../js/hui-refresh-load-more.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+hui.tab('.hui-tab');
+var school = localStorage.getItem("local_my_school");
+var classid;
+
+var url = CommonUtils.urlPrefixTeacher+'searchclass';
+var userid = localStorage.getItem("local_my_user");
+var data={
+	userid,
+	school
+}
+console.log(data);
+var success=function(result){
+	console.log(result);
+	var html  = '<div style="width:100%; height:50px; line-height:50px; text-align:center; float:left;">'+
+		  '<select id="select1">';
+	html += '<option value='+'"'+result.classes[0].classid+'"'+'selected="selected"'+'>'+result.classes[0].classname+'</option>';
+	for(var i = 1; i < result.num; i++){
+		html += '<option value='+'"'+result.classes[i].classid+'"'+'>'+result.classes[i].classname+'</option>'; 
+	}
+	html += '</select>'+'</div>';
+	document.getElementById("select").innerHTML += html;
+	hui('#select1').selectBeautify(showVal, false);
+	function showVal(val){
+		// hui.toast('选项值 : ' + val);
+	}
+	classid = hui('#select1').val();
+	hui.refresh('#refreshContainer', refresh);
+
+	function refresh(){
+		if(hui.refreshNumber < 1){hui.loading('加载中...');}
+		var url = CommonUtils.urlPrefixTeacher+'stustatus';
+		classid = hui('#select1').val();
+		var data={
+			classid,
+			school
+		}
+		console.log(data);
+		var success=function(result){	
+			console.log(result);
+			var html  = '';
+			for(var i = 0; i < result.num; i++){
+				html += '<li>'+
+							'<div class="hui-media-list-img">'+
+								'<img src="data:image/jpeg;base64,'+ result.list[i].stu_photo +'"/>'+
+							'</div>'+
+							'<div class="hui-media-content">';
+				if(result.list[i].in_type == 1){
+					html += '<h1>学生姓名：'+result.list[i].stu_name+'</h1>'+
+								'<p>学生学号：'+result.list[i].stu_id+'</p></div>'+
+								'<div class="mycss">'+
+								'<h1>已入校</h1>';
+					if(result.list[i].par_in == 1 && result.list[i].out_type == 0){
+						html += '<h1>家长已入校</h1>';
+					}
+					if(result.list[i].out_type == 1){
+						html += '<h1>已离校</h1>';
+					}
+					html +=	  '</div>'+'</li>';
+				}
+				else {
+					html += '<h1 style="color:blue">学生姓名：'+result.list[i].stu_name+'</h1>'+
+								'<p>学生学号：'+result.list[i].stu_id+'</p></div>'+
+								'<p>体温：'+'</p></div>'+
+								'</li>';
+				}						
+			}
+			hui('.hui-media-list ul').html(html);
+			hui.endRefresh();
+			//关闭loading
+			hui.loading('加载中...', true);
+		}
+		var error=function(err){
+			hui.loading('加载中...', true);
+			hui.toast("网络错误！");
+			console.log(err)
+		}
+		hui.postJSON(url,data,success,error);
+	}
+	// var url = CommonUtils.urlPrefixTeacher+'stustatus';
+	// var data={
+	// 	classid,
+	// 	school
+	// }
+	// console.log(data);
+	// var success=function(result){	
+	// 	console.log(result);
+	// 	var html  = '';
+	// 	for(var i = 0; i < result.num; i++){
+	// 		html += '<li>'+
+	// 					'<div class="hui-media-list-img">'+
+	// 						'<img src="data:image/jpeg;base64,'+ result.list[i].stu_photo +'"/>'+
+	// 					'</div>'+
+	// 					'<div class="hui-media-content">';
+	// 		if(result.list[i].in_type == 1){
+	// 			html += '<h1>学生姓名：'+result.list[i].stu_name+'</h1>'+
+	// 						'<p>学生学号：'+result.list[i].stu_id+'</p></div>'+
+	// 						'<div class="mycss">'+
+	// 						'<h1>已入校</h1>';
+	// 			if(result.list[i].out_type == 1){
+	// 				html += '<h1>已离校</h1>';
+	// 			}
+	// 			html +=	  '</div>'+'</li>';
+	// 		}
+	// 		else {
+	// 			html += '<h1 style="color:blue">学生姓名：'+result.list[i].stu_name+'</h1>'+
+	// 						'<p>学生学号：'+result.list[i].stu_id+'</p></div>'+
+	// 						'</li>';
+	// 		}					
+	// 	}
+	// 	hui('.hui-media-list ul').html(html);
+	// }
+	// var error=function(err){
+	// 	console.log(err)
+	// }
+
+	// hui.postJSON(url,data,success,error);
+}
+var error=function(err){
+	console.log(err)
+}
+hui.postJSON(url,data,success,error);
+
+hui('#btn1').click(function(){
+	var url = CommonUtils.urlPrefixTeacher+'stustatus';
+	classid = hui('#select1').val();
+	var data={
+		classid,
+		school
+	}
+	console.log(data);
+	var success=function(result){	
+		console.log(result);
+		var html  = '';
+		for(var i = 0; i < result.num; i++){
+			html += '<li>'+
+						'<div class="hui-media-list-img">'+
+							'<img src="data:image/jpeg;base64,'+ result.list[i].stu_photo +'"/>'+
+						'</div>'+
+						'<div class="hui-media-content">';
+			if(result.list[i].in_type == 1){
+				html += '<h1>学生姓名：'+result.list[i].stu_name+'</h1>'+
+							'<p>学生学号：'+result.list[i].stu_id+'</p></div>'+
+							'<div class="mycss">'+
+							'<h1>已入校</h1>';
+				if(result.list[i].out_type == 1){
+					html += '<h1>已离校</h1>';
+				}
+				html +=	  '</div>'+'</li>';
+			}
+			else {
+				html += '<h1 style="color:blue">学生姓名：'+result.list[i].stu_name+'</h1>'+
+							'<p>学生学号：'+result.list[i].stu_id+'</p></div>'+
+							'<p>体温：'+'</p></div>'+
+							'</li>';
+			}						
+		}
+	hui('.hui-media-list ul').html(html);
+}
+var error=function(err){
+console.log(err)
+}
+hui.postJSON(url,data,success,error);
+})
+
+// var html  = '';
+// for(var i = 0; i < 1; i++){
+// 	html += '<li>'+
+// 		'<div class="hui-media-list-img">'+
+//             '<img src="../img/medialist/child.jpg" />'+
+//         '</div>'+
+// 		'<div class="hui-media-content">'+'<h1>A</h1>'+'<p>学号：111111</p>'+'</div>'+
+// 		'<div class="mycss">'+'已入校'+'</div>'+
+// 		'</li>';
+// 	hui('.hui-media-list ul').html(html);
+// }
+// for(var i = 0; i < 1; i++){
+// 	html += '<li>'+
+// 		'<div class="hui-media-list-img">'+
+//             '<img src="../img/medialist/child.jpg" />'+
+//         '</div>'+
+// 		'<div class="hui-media-content">'+'<h1>A</h1>'+'<p>学号：111111</p>'+'</div>'+
+// 		'</li>';
+// 	hui('.hui-media-list ul').html(html);
+// }
+
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpageTeacher.html';
+});
+
+</script>
+</body>
+</html>

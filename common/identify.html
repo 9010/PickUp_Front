@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>修改密码</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body style="background:#F4F5F6;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+</header>
+<div class="hui-wrap">
+    <div class="hui-center-title" style="margin-top:35px;"><h1 style="border:0px;">请先验证身份</h1></div>
+    <div style="margin:20px 10px; margin-bottom:15px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">手机</div>
+            <input type="text" class="hui-input hui-input-clear phonenum" placeholder="请输入账号" checkType="string" checkData="5,20" checkMsg="请正确输入手机号" />
+        </div>
+        <div class="hui-form-items">    
+            <div class="hui-form-items-title">注册码</div>
+            <input type="text" class="hui-input hui-input-clear STID" placeholder="请输入注册码" checkType="string" checkData="1,30" checkMsg="请正确输入注册码" />
+		</div>
+    </div>
+    <div style="padding:10px; padding-top:10px;">
+        <button type="button" class="hui-button hui-button-large hui-primary" id="submit">验证</button>
+    </div>
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../js/hui-form.js" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+var school = localStorage.getItem("local_my_school");
+var html  = '';
+hui('#submit').click(function(){
+    //验证
+    var res = huiFormCheck('#form1');
+    //提交
+    if(res){
+        var url=CommonUtils.urlPrefix+'verify';
+        var data={
+            STID:$('.STID').val(),
+            phonenum:$('.phonenum').val(),
+            school
+		}
+        var success=function(result){
+            console.log(result);
+            if(result.code == 0){
+                console.log(result.code);
+                localStorage.setItem("identify", JSON.stringify(result.phone));
+                window.location.href = "changeCode.html";
+            }
+            else if(result.code == 2){
+                hui.toast('账号错误！');
+            }
+            else if(result.code == 1){
+                hui.toast('注册码错误！');
+            }
+        }
+        var error=function(err){
+			console.log(err)
+		}
+		hui.postJSON(url,data,success,error);
+    }
+});
+</script>
+</body>
+</html>

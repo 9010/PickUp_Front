@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>注册</title>
+<link rel="stylesheet" type="text/css" href="./css/hui.css" />
+</head>
+<body style="background:#F4F5F6;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+</header>
+<div class="hui-wrap">
+    <div class="hui-center-title-special" style="margin-top:35px;"><h1 style="border:0px;">注册</h1></div>
+    <div style="margin:20px 10px; margin-bottom:15px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">手机号</div>
+            <input type="text" class="hui-input hui-input-clear phoneNumber" placeholder="请输入手机号" checkType="string" checkData="11" checkMsg="请输入手机号" />
+        </div>
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">姓名</div>
+            <input type="text" class="hui-input hui-input-clear name" placeholder="请输入姓名" checkType="string" checkData="1,20" checkMsg="请输入姓名" />
+        </div>
+		<div class="hui-form-items">
+				<div class="hui-form-items-title">注册码</div>
+				<input type="text" class="hui-input hui-input-clear STID" placeholder="注册码" checkType="string" checkData="1,50" checkMsg="请输入学生ID" />
+		</div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">登录密码</div>
+            <input type="password" class="hui-input hui-pwd-eye password" placeholder="登录密码" checkType="string" id="password" checkData="6,20" checkMsg="密码应为6-20个字符" />
+        </div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">确认密码</div>
+            <input type="password" class="hui-input hui-pwd-eye" placeholder="确认密码" checkType="sameWithId" checkData="password" checkMsg="两次密码不一致"  />
+        </div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">身份</div>
+            <button type="button" class="hui-button hui-button-large" id="btn1">选择身份</button>
+        </div>
+    </div>
+    <div style="padding:10px; padding-top:10px;">
+        <button type="button" class="hui-button hui-button-large hui-primary" id="submit">注册</button>
+    </div>
+</div>
+<script type="text/javascript" src="./js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="./js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript" src="./js/hui-form.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/hui-picker.js" charset="utf-8"></script>
+<script type="text/javascript">
+function sleep (time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+var relation;
+var picker1 = new huiPicker('#btn1', function(){
+	var val = picker1.getVal(0);
+	var txt = picker1.getText(0);
+    hui('#btn1').html(txt);
+    relation = val;
+});
+// 同级 picker 数量设置 默认 1
+picker1.level    = 1;
+//1. piker 数据
+var pickerData = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'}];
+//2. 查询默认值 例如  {value:2, text:'女'} 的默认值为 2
+//不设置默认值此步骤省略即可
+var defaultValue  = 2;
+var defaultIndex  = pickerData.pickerIndexOf(defaultValue);
+//3 绑定数据时设置默认值 //不设置默认值 忽略第三个参数即可
+picker1.bindData(0, pickerData);
+
+hui('#submit').click(function(){
+    //验证
+    var res = huiFormCheck('#form1');
+    //提交
+    if(res){
+        if(relation == null || (relation < 1 || relation > 7)){
+            hui.toast('请选择身份！');
+        }
+        else{
+            var url=CommonUtils.urlPrefix+'register';
+            var data={
+                phoneNumber:$('.phoneNumber').val(),
+                name:$('.name').val(),
+                STID:$('.STID').val(),
+                password:$('.password').val(),
+                relation
+            }
+            console.log(data);
+            var success=function(result){
+                console.log(result);
+                if(result.code==0){
+                    hui.alert('注册成功','确认',function(){
+                        window.location.href='loginIn.html';
+                    });
+                }
+                else if(result.code==1){
+                    hui.toast('账号已存在！');
+                }
+                else if(result.code==2){
+                    hui.toast('注册码错误！');
+                }
+                else if(result.code==3){
+                    hui.toast('未知错误！');
+                }
+            }
+            var error=function(err){
+                console.log(err)
+            }
+            hui.postJSON(url,data,success,error);
+        }
+    }
+});
+</script>
+</body>
+</html>

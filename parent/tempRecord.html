@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>临时委托</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back-mainpage"></div>
+	<h1>临时委托</h1>
+	<div id="hui-header-menu-special"></div>
+</header>
+<div class="hui-wrap">
+	<div class="hui-media-list" style="padding:10px;">
+		<ul></ul>
+	</div>	
+</div>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-tab.js" type="text/javascript"></script>
+<script type="text/javascript">
+hui.tab('.hui-tab');
+var html  = '';
+for(var i = 0; i < 5; i++){
+	html += '<li>'+
+		'<div class="hui-media-list-img">'+
+            '<img src="../img/medialist/3.jpg" />'+
+        '</div>'+
+        '<div class="hui-media-content">'+'<h1>委托</h1>'+'<h1>父亲：张三</h1>'+'<h1>接走 儿子：A</h1>'+'</div>';
+	'</li>';
+	hui('.hui-media-list ul').html(html);
+}
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpage.html';
+});
+var meuns = ['添加临时委托'];
+var cancel = '取消';
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpage.html';
+});
+hui('#hui-header-menu-special').click(function(){
+    hui.actionSheet(meuns, cancel, function(e){
+		console.log(e.index);
+        hui.toast(e.innerHTML);
+    });
+});
+</script>
+</body>
+</html>

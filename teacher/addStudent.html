@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>添加子女</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body style="background:#FCFCFC;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>添加子女</h1>
+</header>
+<div class="hui-wrap">
+    <form style="padding:28px 10px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">学号</div>
+            <input type="number" class="hui-input" placeholder="请输入学号" checkType="string" checkData="1,20" checkMsg="请正确输入学号" />
+        </div>
+        <div class="hui-form-items">
+        	<div class="hui-form-items-title">班级</div>
+            <button type="button" class="hui-button hui-button-large" id="btn1">选择班级</button>
+        </div>
+        <div style="padding:15px 8px;">
+            <button type="button" class="hui-button hui-button-large hui-primary" id="submitBtn">添加</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../js/hui.js"></script>
+<script type="text/javascript" src="../js/hui-form.js"></script>
+<script type="text/javascript" src="../js/hui-picker.js" charset="utf-8"></script>
+<script src="../js/hui-select-beautify.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+hui.formInit();
+
+var school;
+var picker1 = new huiPicker('#btn1', function(){
+	var val = picker1.getVal(0);
+	var txt = picker1.getText(0);
+    hui('#btn1').html(txt);
+    school = val;
+});
+// 同级 picker 数量设置 默认 1
+picker1.level    = 1;
+//1. piker 数据
+var pickerData = [{value:1, text:'3年2班'},{value:2, text:'3年3班'}];
+var defaultValue  = 2;
+var defaultIndex  = pickerData.pickerIndexOf(defaultValue);
+//3 绑定数据时设置默认值 //不设置默认值 忽略第三个参数即可
+picker1.bindData(0, pickerData);
+
+hui('#submitBtn').click(function(){
+    var res = huiFormCheck('#form1');
+    //提交
+    if(res){
+        if(school != null){
+            var url=CommonUtils.urlPrefix+'addstudent';
+            var familyid = localStorage.getItem("local_my_family");
+            var data={
+                familyid,
+                STID:$('.STID').val(),
+                school
+            }
+            var success=function(result){    
+                console.log(result);
+                if(result.code == 3){
+                    hui.toast("已存在此学生！");
+                }
+                else if(result.code == 0){
+                    hui.alert('添加成功','确认'),function(){window.location.href = "family.html";}; 
+                }
+                else if(result.code == 4){
+                    hui.toast("学号错误！");
+                }
+                
+            }
+            var error=function(err){
+                console.log(err)
+            }
+            console.log(data);
+            hui.postJSON(url,data,success,error);
+        }
+        else{
+            hui.toast("请选择班级！")
+        }
+    }
+});
+</script>
+</body>
+</html>

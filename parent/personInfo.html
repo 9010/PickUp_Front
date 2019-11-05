@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>账号信息</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back-mainpage"></div>
+	<h1>账号信息</h1>
+	<div id="hui-header-menu-special-change"></div>
+</header>
+<div class="hui-wrap">
+    <div class="hui-list" style="background:#FFFFFF; margin-top:28px;">
+        <a style="height:auto; height:80px; padding-bottom:8px;">
+    		<div class="hui-list-icons" style="width:110px; height:80px;">
+    			<img src="" style="width:66px; margin:0px; border-radius:50%;" id="head"/>
+    		</div>
+    		<div class="hui-list-text" style="height:79px; line-height:79px;">
+    			<div class="hui-list-text-content username">
+    			</div>
+    		</div>
+    	</a>
+    	
+    </div>
+    <div class="hui-list" style="background:#FFFFFF; margin-top:28px;">
+        <ul> 
+			<li>
+		    	<div class="hui-list-text">
+					身份：
+					<div class="hui-list-text role">
+					</div>
+				</div>
+			   </li>
+			   <li>
+		    	<div class="hui-list-text">
+					年龄：
+					<div class="hui-list-text age">
+					</div>
+				</div>
+			   </li>
+			<li>
+				<div class="hui-list-text">
+					住址：
+					<div class="hui-list-text place">
+					</div>
+				</div>
+			</li>
+           	<li>
+            	<a href="../common/CutPhoto.html">
+		    		<div class="hui-list-text">
+		    			<h1>修改头像</h1>
+		    		</div>
+            	</a>
+           	</li>
+           	<li>
+            	<a href="../common/identifyPWD.html">
+		    		<div class="hui-list-text">
+		    			<h1>修改密码</h1>
+		    		</div>
+            	</a>
+           	</li>
+        </ul>
+    </div>
+    <div>
+		<button type="button" class="hui-button hui-button-large hui-danger" id="btn2" style="margin-top:15px;">登出</button>
+    </div>
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../js/hui.js" charset="UTF-8"></script>
+<script type="text/javascript" src="../js/AjaxHelper.js" charset="utf-8"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+var userid = localStorage.getItem("local_my_user");
+var school = localStorage.getItem("local_my_school");
+var relationship = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'}];
+
+//localstorage
+str = localStorage.getItem("local_my_user");	
+var reg = new RegExp('"',"g");
+str = str.replace(reg, "");  //去掉str两边的双引号
+
+var storage = window.localStorage;
+console.log(storage);
+if(storage["id0"] != null){
+	document.getElementById('head').src = "data:image/jpeg;base64," + storage["image" + str];
+	$('.username').html(storage["name" + str]);
+	$('.place').html(storage["address" + str]);
+	$('.age').html(storage["age" + str]);
+	$('.role').html(relationship[storage["relation" + str] - 1].text);
+}
+
+var url = CommonUtils.urlPrefix+'detail';
+
+var data={
+	userid,
+	school
+}
+console.log(data);
+var success=function(result){
+	console.log(result);
+	storage["address" + str] = result.address;
+	document.getElementById('head').src = "data:image/jpeg;base64," + result.image;
+    $('.username').html(result.name);
+    $('.place').html(result.address);
+	$('.age').html(result.age);
+    $('.role').html(relationship[result.relation-1].text);
+}
+
+var error=function(err){
+	console.log(err)
+}
+
+hui.postJSON(url,data,success,error);
+	
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpage.html';
+});
+
+hui('#hui-header-menu-special-change').click(function(){
+    window.location.href='changeInfo.html';
+});
+
+hui('#btn2').click(function(){
+    hui.confirm('您确认要登出吗？', ['取消','确定'], function(){
+		localStorage.clear();
+        window.location.href='../loginIn.html';
+    },function(){
+        console.log('取消');
+    });
+});
+
+</script>
+</body>
+</html>

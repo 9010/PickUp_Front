@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>班级管理</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+	<style type="text/css">
+		.mycss{
+			position: absolute;
+			right: 1rem;
+		}
+	</style>
+</head>
+<body>
+<header class="hui-header">
+    <div id="hui-back-mainpage"></div>
+	<h1>班级管理</h1>
+	<div id="hui-header-menu-special"></div>
+</header>
+<div class="hui-wrap">
+	<div id="hui-header-sreach">
+		<div id="hui-header-sreach-icon"></div>
+		<form><input type="search" id="searchKey" onkeydown="if(event.keyCode==13)return false;" placeholder="请输入关键字" /></form>
+	</div>
+		<div class="hui-media-list" style="padding:10px;">
+			<ul>
+				<li>
+					<a href="studentInfo.html">
+						<div class="hui-media-list-img">
+							<img src="../img/medialist/child.jpg" />
+						</div>
+						<div class="hui-media-content">
+							<h1>A</h1>
+							<p>学号：111111</p>
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="studentInfo.html">
+						<div class="hui-media-list-img">
+							<img src="../img/medialist/child2.jpg" />
+						</div>
+						<div class="hui-media-content">
+							<h1>B</h1>
+							<p>学号：123456</p>
+						</div>
+					</a>
+				</li>
+				<li>
+					<a href="studentInfo.html">
+						<div class="hui-media-list-img">
+							<img src="../img/medialist/child3.jpg" />
+						</div>
+						<div class="hui-media-content">
+							<h1>C</h1>
+							<p>学号：123789</p>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+</div>
+<script src="../js/hui.js" type="text/javascript" charset="utf-8"></script>
+<script src="../js/hui-tab.js" type="text/javascript"></script>
+<script type="text/javascript">
+hui.tab('.hui-tab');
+// var html  = '';
+// for(var i = 0; i < 4; i++){
+// 	html += '<li>'+'<a href="studentInfo.html">'+
+// 		'<div class="hui-media-list-img">'+
+//             '<img src="../img/medialist/3.jpg" />'+
+//         '</div>'+
+// 		'<div class="hui-media-content">'+'<h1>A</h1>'+'<p>学号：111111</p>'+'</div>'+
+// 		'</a>'+
+// 		'</li>';
+// 	hui('.hui-media-list ul').html(html);
+// }
+var meuns = ['添加学生'];
+var cancel = '取消';
+hui('#hui-back-mainpage').click(function(){
+    window.location.href='mainpageTeacher.html';
+});
+hui('#hui-header-menu-special').click(function(){
+    hui.actionSheet(meuns, cancel, function(e){
+		console.log(e.index);
+        hui.toast(e.innerHTML);
+    });
+});
+</script>
+</body>
+</html>

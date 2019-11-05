@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>添加事项</title>
+<link rel="stylesheet" type="text/css" href="../css/hui.css" />
+</head>
+<body style="background:#FCFCFC;">
+<header class="hui-header">
+    <div id="hui-back"></div>
+    <h1>添加事项</h1>
+</header>
+<div class="hui-wrap">
+    <form style="padding:28px 10px;" class="hui-form" id="form1">
+        <div class="hui-form-items">
+            <div class="hui-form-items-title">添加内容：</div>
+        </div>
+        <div class="hui-form-items">
+            <input type="text" class="title" id="hui-dialog-input" placeholder="请输入标题" checkType="string" checkData="1,30" checkMsg="标题限制30字内">
+        </div>
+        <div class="hui-form-items">
+            <input type="text" class="content" id="hui-dialog-input-special" placeholder="请输入事项内容">
+        </div>
+        <div style="padding:15px 8px;">
+            <button type="button" class="hui-button hui-button-large hui-primary" id="submitBtn">添加</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="../js/hui.js"></script>
+<script type="text/javascript" src="../js/hui-form.js"></script>
+<script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript">
+hui.formInit();
+//表单元素数据收集演示
+var school = localStorage.getItem("local_my_school");
+hui('#submitBtn').click(function(){
+    var res = huiFormCheck('#form1');
+    //提交
+    if(res){
+        var url=CommonUtils.urlPrefixTeacher+'addnotice';
+        var data={
+            title:$('.title').val(),
+            content:$('.content').val(),
+            school
+        }
+            var success=function(result){    
+                console.log(result);
+                hui.closeLoading();
+                hui.alert('添加成功','确认'),function(){window.location.href = "matter.html";}; 
+            }
+            var error=function(err){
+                console.log(err)
+            }
+            console.log(data);
+            hui.postJSON(url,data,success,error);
+        }
+});
+</script>
+</body>
+</html>
