@@ -432,7 +432,7 @@ var hui = (function(selector){
 		sets.complete = 'complete' in sets ? sets.complete : null;
 		sets.success = 'success' in sets ? sets.success : function(){};
 		sets.error = 'error' in sets ? sets.error : function(e){console.log('ajax error : ' + JSON.stringify(e));}
-		sets.ContentType = 'ContentType' in sets ? sets.ContentType : 'application/x-www-form-urlencoded';
+		sets.ContentType = 'ContentType' in sets ? sets.ContentType : 'application/json';
 		sets.header = 'header' in sets ? sets.header : false;
 		var xhr = new window.XMLHttpRequest();
 		xhr.open(sets.type, sets.url, async);

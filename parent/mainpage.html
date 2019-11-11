@@ -112,19 +112,20 @@ function sleep (time) {
 }
 $(document).ready(function(){
 
-	var localuser = localStorage.getItem("local_my_user");
-            if(localuser != null && typeof(localuser) != undefined && localuser!=undefined){
-                console.log(JSON.parse(localuser));
-                var identityType=JSON.parse(localuser).identityType;
-                if(identityType=='1'){
-                    sleep(800).then(()=>{
-                    window.location.href='../mainpageTeacher.html';
-                	})
-                }
+	var localuser = localStorage.getItem("local_my_account");
+		if(localuser != null && typeof(localuser) != undefined && localuser!=undefined){
+			console.log(JSON.parse(localuser));
+			var identityType=JSON.parse(localuser).identityType;
+			//跳转到教师界面
+			if(identityType=='1'){
+				sleep(800).then(()=>{
+					window.location.href='../mainpageTeacher.html';
+				})
 			}
-			else{
-                window.location.href='../loginIn.html';
-			}
+		}
+		else{
+			window.location.href='../loginIn.html';
+		}
 });
 
 var swipe = new huiSwpie('#swipe');

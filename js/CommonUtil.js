@@ -1,6 +1,6 @@
 var CommonUtils = {
-    urlPrefix :'http://47.98.107.94:8080/stu/',  //prefix of api address
-    urlPrefixTeacher :'http://47.98.107.94:8080/stu/teacher/',
+    // urlPrefix :'http://47.98.107.94:8080/stu/',  //prefix of api address
+    // urlPrefixTeacher :'http://47.98.107.94:8080/stu/teacher/',
 
     //urlPrefix :'http://stu.ngrok.ilingyue.cn:8088/stu/',  //prefix of api address
     //urlPrefixTeacher :'http://stu.ngrok.ilingyue.cn:8088/stu/teacher/',
@@ -13,4 +13,7 @@ var CommonUtils = {
 
     //urlPrefix :'http://10.254.2.62/',  //prefix of api address
     //urlPrefixTeacher :'http://10.254.2.62/teacher/',
+
+    urlPrefix :'http://localhost',  //prefix of api address
+    urlPrefixTeacher :'http://localhost',
 }
