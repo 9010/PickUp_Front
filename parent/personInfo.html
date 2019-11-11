@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>账号信息</title>
+<title>个人信息</title>
 <link rel="stylesheet" type="text/css" href="../css/hui.css" />
 </head>
 <body>
 <header class="hui-header">
     <div id="hui-back-mainpage"></div>
-	<h1>账号信息</h1>
+	<h1>个人信息</h1>
 	<div id="hui-header-menu-special-change"></div>
 </header>
 <div class="hui-wrap">
@@ -74,47 +74,47 @@
 <script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
 <script type="text/javascript">
 
-var userid = localStorage.getItem("local_my_user");
-var school = localStorage.getItem("local_my_school");
+var account = localStorage.getItem("local_my_account");
+var schoolId = localStorage.getItem("local_my_school");
 var relationship = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'}];
 
-//localstorage
-str = localStorage.getItem("local_my_user");	
-var reg = new RegExp('"',"g");
-str = str.replace(reg, "");  //去掉str两边的双引号
+// //localstorage
+// str = localStorage.getItem("local_my_user");	
+// var reg = new RegExp('"',"g");
+// str = str.replace(reg, "");  //去掉str两边的双引号
 
-var storage = window.localStorage;
-console.log(storage);
-if(storage["id0"] != null){
-	document.getElementById('head').src = "data:image/jpeg;base64," + storage["image" + str];
-	$('.username').html(storage["name" + str]);
-	$('.place').html(storage["address" + str]);
-	$('.age').html(storage["age" + str]);
-	$('.role').html(relationship[storage["relation" + str] - 1].text);
-}
+// var storage = window.localStorage;
+// console.log(storage);
+// if(storage["id0"] != null){
+// 	document.getElementById('head').src = "data:image/jpeg;base64," + storage["image" + str];
+// 	$('.username').html(storage["name" + str]);
+// 	$('.place').html(storage["address" + str]);
+// 	$('.age').html(storage["age" + str]);
+// 	$('.role').html(relationship[storage["relation" + str] - 1].text);
+// }
 
-var url = CommonUtils.urlPrefix+'detail';
+// var url = CommonUtils.urlPrefix+'detail';
 
-var data={
-	userid,
-	school
-}
-console.log(data);
-var success=function(result){
-	console.log(result);
-	storage["address" + str] = result.address;
-	document.getElementById('head').src = "data:image/jpeg;base64," + result.image;
-    $('.username').html(result.name);
-    $('.place').html(result.address);
-	$('.age').html(result.age);
-    $('.role').html(relationship[result.relation-1].text);
-}
+// var data={
+// 	userid,
+// 	school
+// }
+// console.log(data);
+// var success=function(result){
+// 	console.log(result);
+// 	storage["address" + str] = result.address;
+// 	document.getElementById('head').src = "data:image/jpeg;base64," + result.image;
+//     $('.username').html(result.name);
+//     $('.place').html(result.address);
+// 	$('.age').html(result.age);
+//     $('.role').html(relationship[result.relation-1].text);
+// }
 
-var error=function(err){
-	console.log(err)
-}
+// var error=function(err){
+// 	console.log(err)
+// }
 
-hui.postJSON(url,data,success,error);
+// hui.postJSON(url,data,success,error);
 	
 hui('#hui-back-mainpage').click(function(){
     window.location.href='mainpage.html';
