@@ -74,12 +74,15 @@
 <script type="text/javascript" src="../js/CommonUtil.js" charset="utf-8"></script>
 <script type="text/javascript">
 
-var account = localStorage.getItem("local_my_account");
-var schoolId = localStorage.getItem("local_my_school");
+//从localstorage中取出account和schoolId，并转换成json对象
+var account = JSON.parse(localStorage.getItem("local_my_account"));
+var schoolId = JSON.parse(localStorage.getItem("local_my_school"));
+
+//下拉选择框中的选项
 var relationship = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'}];
 
-// //localstorage
-// str = localStorage.getItem("local_my_user");	
+//localstorage
+// str = localStorage.getItem("local_my_account");	
 // var reg = new RegExp('"',"g");
 // str = str.replace(reg, "");  //去掉str两边的双引号
 
@@ -126,8 +129,27 @@ hui('#hui-header-menu-special-change').click(function(){
 
 hui('#btn2').click(function(){
     hui.confirm('您确认要登出吗？', ['取消','确定'], function(){
-		localStorage.clear();
-        window.location.href='../loginIn.html';
+		//测试用地址
+		var url='http://localhost:58080/logout';
+            var data={
+                account
+            }
+            console.log(data);
+            var success=function(response){
+                console.log(response);
+                if(response.result == "ok"){
+                    localStorage.clear();
+        			window.location.href='../loginIn.html';
+                }
+                else{
+                    hui.toast('网络错误');
+                }
+            }
+            var error=function(err){
+                console.log(err)
+            }
+            hui.postJSON(url,data,success,error);
+		
     },function(){
         console.log('取消');
     });

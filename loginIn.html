@@ -21,11 +21,11 @@
     <div style="margin:20px 10px; margin-bottom:15px;" class="hui-form" id="form1">
         <div class="hui-form-items">
         	<div class="hui-form-items-title">手机号</div>
-            <input type="text" class="hui-input hui-input-clear account" placeholder="请输入手机号" checkType="string" checkData="5,20" checkMsg="请输入手机号" />
+            <input type="text" class="hui-input hui-input-clear account" placeholder="请输入手机号" checkType="string" checkData="11" checkMsg="请正确输入手机号" />
         </div>
         <div class="hui-form-items">
         	<div class="hui-form-items-title">密码</div>
-            <input type="password" class="hui-input hui-pwd-eye password" placeholder="登录密码" checkType="string" id="pwd" checkData="6,20" checkMsg="必须输入密码" />
+            <input type="password" class="hui-input hui-pwd-eye password" placeholder="登录密码" checkType="string" id="pwd" checkData="6,20" checkMsg="请输入密码" />
         </div>
 	</div>
 	<div class="hui-more-special"><a href="./common/identify.html">忘记密码？</a></div>
@@ -48,6 +48,7 @@
 <script type="text/javascript" src="./js/hui.js" charset="UTF-8"></script>
 <script type="text/javascript" src="./js/hui-form.js" charset="utf-8"></script>
 <script type="text/javascript" src="./js/CommonUtil.js" charset="utf-8"></script>
+<script type="text/javascript" src="./js/md5.js" charset="utf-8"></script>
 <script type="text/javascript">
 
 hui('#login').click(function(){
@@ -59,13 +60,15 @@ hui('#login').click(function(){
 		var url='http://localhost:58080/login';
 		var data={
 			account:$('.account').val(),
-			password:$('.password').val()
+			//对密码进行md5加密
+			password:hash = hex_md5($('.password').val())
 		}
 		var success=function(response){
 			console.log(response);
 			if(response.result == "ok"){
 				if(response.data.type == 0){ //家长
-					
+
+					//存储用户信息至浏览器内存，存储用户名（手机号）、学校ID以及token
 					localStorage.setItem("local_my_account",JSON.stringify(response.data.account));
 					localStorage.setItem("local_token",JSON.stringify(response.data.token));
 					localStorage.setItem("local_my_school",JSON.stringify(response.data.schoolId));
@@ -102,11 +105,12 @@ hui('#login').click(function(){
 				}
 				else if(response.data.type==1){ //教师
 
-					//存储用户信息至浏览器内存，目前仅存储用户名（手机号）与学校ID
+					//存储用户信息至浏览器内存，存储用户名（手机号）、学校ID以及token
 					localStorage.setItem("local_my_user",JSON.stringify(response.data.account));
 					localStorage.setItem("local_my_family",JSON.stringify(response.data.token));
 					localStorage.setItem("local_my_school",JSON.stringify(response.data.schoolId));
 
+					//展示一下localstorage
 					console.log(localStorage.getItem("local_my_account"))
 					console.log(localStorage.getItem("local_token"))
 					console.log(localStorage.getItem("local_my_school"))
@@ -135,11 +139,15 @@ hui('#login').click(function(){
 				}
 			}
 			else if(response.result == "not_ok"){
-				hui.toast(response.error.message);
+				hui.toast(response.errors[0].message);
 			}
+			else{
+                hui.toast("网络错误");
+            }
 		}
 		var error=function(err){
 			console.log(err)
+			hui.toast("网络错误");
 		}
 		hui.postJSON(url,data,success,error);
 	}
