@@ -26,8 +26,8 @@
             <input type="password" class="hui-input hui-pwd-eye" placeholder="确认密码" checkType="sameWithId" checkData="password" checkMsg="两次密码不一致"  />
         </div>
         <div class="hui-form-items">
-				<div class="hui-form-items-title">注册码</div>
-				<input type="text" class="hui-input hui-input-clear creditId" placeholder="注册码" checkType="string" checkData="1,50" checkMsg="请输入学生ID" />
+				<div class="hui-form-items-title">学籍号</div>
+				<input type="text" class="hui-input hui-input-clear creditId" placeholder="学籍号" checkType="string" checkData="1,50" checkMsg="请输入学生学籍号" />
         </div>
         <!-- <div class="hui-form-items">
             <div class="hui-form-items-title">姓名</div>
@@ -77,7 +77,7 @@ hui('#submit').click(function(){
     //提交
     if(res){
         //测试用地址
-        var url='http://localhost:58080/register';
+        var url='http://localhost:58080/sso/register';
         var data={
             account:$('.account').val(),
             //对密码进行md5加密
@@ -85,9 +85,9 @@ hui('#submit').click(function(){
             creditId:$('.creditId').val(),
         }
         console.log(data);
-        var success=function(result){
-            console.log(result);
-            if(rresponse.result == "ok"){
+        var success=function(response){
+            console.log(response);
+            if(response.result == "ok"){
                 hui.alert('注册成功','确认',function(){
                     window.location.href='loginIn.html';
                 });

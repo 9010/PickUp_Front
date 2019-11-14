@@ -19,7 +19,7 @@
     			<img src="" style="width:66px; margin:0px; border-radius:50%;" id="head"/>
     		</div>
     		<div class="hui-list-text" style="height:79px; line-height:79px;">
-    			<div class="hui-list-text-content username">
+    			<div class="hui-list-text-content account">
     			</div>
     		</div>
     	</a>
@@ -28,24 +28,21 @@
     <div class="hui-list" style="background:#FFFFFF; margin-top:28px;">
         <ul> 
 			<li>
+				<div class="hui-list-text">
+					姓名：
+					<div class="hui-list-text name"></div>
+				</div>
+			</li>
+			<li>
 		    	<div class="hui-list-text">
 					身份：
-					<div class="hui-list-text role">
-					</div>
+					<div class="hui-list-text role"></div>
 				</div>
-			   </li>
-			   <li>
-		    	<div class="hui-list-text">
-					年龄：
-					<div class="hui-list-text age">
-					</div>
-				</div>
-			   </li>
+			</li>
 			<li>
 				<div class="hui-list-text">
 					住址：
-					<div class="hui-list-text place">
-					</div>
+					<div class="hui-list-text address"></div>
 				</div>
 			</li>
            	<li>
@@ -76,7 +73,7 @@
 
 //从localstorage中取出account和schoolId，并转换成json对象
 var account = JSON.parse(localStorage.getItem("local_my_account"));
-var schoolId = JSON.parse(localStorage.getItem("local_my_school"));
+var token = JSON.parse(localStorage.getItem("local_my_token"));
 
 //下拉选择框中的选项
 var relationship = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, text:'爷爷'},{value:4, text:'奶奶'},{value:5, text:'外公'},{value:6, text:'外婆'}];
@@ -86,38 +83,44 @@ var relationship = [{value:1, text:'父亲'},{value:2, text:'母亲'},{value:3, 
 // var reg = new RegExp('"',"g");
 // str = str.replace(reg, "");  //去掉str两边的双引号
 
-// var storage = window.localStorage;
-// console.log(storage);
-// if(storage["id0"] != null){
-// 	document.getElementById('head').src = "data:image/jpeg;base64," + storage["image" + str];
-// 	$('.username').html(storage["name" + str]);
-// 	$('.place').html(storage["address" + str]);
-// 	$('.age').html(storage["age" + str]);
-// 	$('.role').html(relationship[storage["relation" + str] - 1].text);
-// }
+var storage = window.localStorage;
+console.log(storage);
+if(storage["id0"] != null){
+	document.getElementById('head').src = "data:image/jpeg;base64," + storage["image" + str];
+	$('.username').html(storage["name" + str]);
+	$('.place').html(storage["address" + str]);
+	$('.age').html(storage["age" + str]);
+	$('.role').html(relationship[storage["relation" + str] - 1].text);
+}
 
-// var url = CommonUtils.urlPrefix+'detail';
+//测试用地址
+var url='http://localhost:58081/parent/getPersonInfo';
 
-// var data={
-// 	userid,
-// 	school
-// }
-// console.log(data);
-// var success=function(result){
-// 	console.log(result);
-// 	storage["address" + str] = result.address;
-// 	document.getElementById('head').src = "data:image/jpeg;base64," + result.image;
-//     $('.username').html(result.name);
-//     $('.place').html(result.address);
-// 	$('.age').html(result.age);
-//     $('.role').html(relationship[result.relation-1].text);
-// }
+var data={
+	account,
+	token
+}
+console.log(data);
+var success=function(response){
+	console.log(response);
+	// storage["address" + str] = response.data.address;
+	if(response.result == "ok"){
+		document.getElementById('head').src = response.data.parentPhotoUrl;
+		$('.account').html(response.data.account);
+		$('.name').html(response.data.parentName);
+		$('.address').html(response.data.address);
+		$('.role').html(relationship[response.data.relation - 1].text);
+	}
+	else{
+		hui.toast('网络错误');
+	}
+}
 
-// var error=function(err){
-// 	console.log(err)
-// }
+var error=function(err){
+	console.log(err)
+}
 
-// hui.postJSON(url,data,success,error);
+hui.postJSON(url,data,success,error);
 	
 hui('#hui-back-mainpage').click(function(){
     window.location.href='mainpage.html';
@@ -130,7 +133,7 @@ hui('#hui-header-menu-special-change').click(function(){
 hui('#btn2').click(function(){
     hui.confirm('您确认要登出吗？', ['取消','确定'], function(){
 		//测试用地址
-		var url='http://localhost:58080/logout';
+		var url='http://localhost:58080/sso/logout';
             var data={
                 account
             }

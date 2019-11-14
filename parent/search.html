@@ -66,10 +66,10 @@ function refresh(){
         console.log(err)
     }
     hui.postJSON(url,data,success,error);
-    // sleep(50000).then(() => {
-    //     hui.closeLoading();
-    //     hui.toast('网络错误'); 
-    // });
+    sleep(5000).then(() => {
+        hui.closeLoading();
+        hui.toast('网络错误'); 
+    });
     // hui.get(
     //     function(res){
     //         //var data = res.split('--hcSplitor--');
